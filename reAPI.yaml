@@ -1,7 +1,8 @@
+#file: noinspection SwYamlUnresolvedReferencesInspection
 openapi: 3.0.3
 info:
   title: Nickname extraction service API
-  description: Service for extracting usernames from email addresses
+  description: Service for extracting usernames and domains from email addresses
   version: 1.0.0
   contact:
     name: Maxim Berezhnoy
@@ -17,42 +18,59 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TextRequest'
+              $ref: "#/components/schemas/TextRequest"
       responses:
         200:
           description: Nickname has been successfully extracted
           content:
             application/json:
               schema:
+                # noinspection SwYamlUnresolvedReferencesInspection
                 $ref: "#components/schemas/NicknameResponse"
-        404:
-          description: Page not found
+        400:
+          description: JSON parse error
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ErrorResponse"
         422:
           description: Invalid request parameters
           content:
             application/json:
               schema:
-                $ref: "#components/schemas/ApiErrorResponse"
+                $ref: "#components/schemas/ValidationErrorResponse"
 
     get:
       tags:
         - Nicknames
       summary: Get nickname request history
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Page number
       responses:
         200:
-          description: Nickname has been successfully extracted
+          description: Nickname request history has been successfully received
           content:
             application/json:
               schema:
                 $ref: "#components/schemas/NicknamesHistoryResponse"
-        400:
+        404:
+          description: Page not found
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ErrorResponse"
+        422:
           description: Invalid request parameters
           content:
             application/json:
               schema:
-                $ref: "#components/schemas/ApiErrorResponse"
-        500:
-          description: The server is unavailable
+                $ref: "#components/schemas/ValidationErrorResponse"
 
   /emails/domain:
     post:
@@ -72,46 +90,69 @@ paths:
             application/json:
               schema:
                 $ref: "#components/schemas/DomainResponse"
-        404:
-          description: Page not found
+        400:
+          description: JSON parse error
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ErrorResponse"
         422:
           description: Invalid request parameters
           content:
             application/json:
               schema:
-                $ref: "#components/schemas/ApiErrorResponse"
+                $ref: "#components/schemas/ValidationErrorResponse"
 
     get:
       tags:
         - Domains
       summary: Get domain request history
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Page number
       responses:
         200:
-          description: The request history was successfully received
+          description: Domain request history has been successfully received
           content:
             application/json:
               schema:
                 $ref: "#components/schemas/DomainsHistoryResponse"
-        400:
+        404:
+          description: Page not found
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/ErrorResponse"
+        422:
           description: Invalid request parameters
           content:
             application/json:
               schema:
-                $ref: "#components/schemas/ApiErrorResponse"
-        500:
-          description: The server is unavailable
+                $ref: "#components/schemas/ValidationErrorResponse"
 
 components:
   schemas:
-    ApiErrorResponse:
+    ErrorResponse:
       type: object
       properties:
-        description:
+        detail:
           type: string
-        code:
-          type: string
-        exceptionMessage:
-          type: string
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            text:
+              type: array
+              items:
+                type: string
 
     TextRequest:
       type: object
@@ -138,6 +179,9 @@ components:
           type: array
           items:
             type: string
+        amount:
+          type: integer
+          format: int32
         total:
           type: integer
           format: int64
@@ -149,6 +193,9 @@ components:
           type: array
           items:
             type: string
+        amount:
+          type: integer
+          format: int32
         total:
           type: integer
           format: int64

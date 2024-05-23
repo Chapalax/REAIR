@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: backend
+    expose:
+      - 8000
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  frontend:
+    container_name: frontend
+    image: nginx:alpine3.19-slim
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - nginx
