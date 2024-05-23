@@ -5,99 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <link rel="stylesheet" href="style.css">
+    
 </head>
 <body>
     <h1>Email Processing</h1>
     
-    <textarea id="textInput" rows="4" cols="50"></textarea><br><br>
+    <textarea id="textInput" rows="4" cols="50"></textarea>
 
+    <div class="error__container" id="error"></div>
     <div class="row">
         <div class="col">
-            <button onclick="getNickname()">Получить никнейм</button>
-            <button onclick="getDomain()">Получить домен</button><br><br>
+            <button class="btn__action" onclick="postEmailNickname()">Получить никнейм</button>
+            <button class="btn__action" onclick="postEmailDomain()">Получить домен</button><br><br>
         </div>
 
         <div class="col">
-            <button onclick="getHistoryNickname()">Получить историю по никнеймам</button>
-            <button onclick="getHistoryDomain()">Получить историю по доменам</button><br><br>
+            <button class="btn__action" onclick="getHistoryNickname(1)">Получить историю по никнеймам</button>
+            <button class="btn__action" onclick="getHistoryDomain(1)">Получить историю по доменам</button><br><br>
         </div>
-
     </div>
     
     <div class="result__container">
-        <span>Результат: </span>
         <span id="output"></span>
     </div>
-    
-    <script>
-        function getNickname() {
-            var text = document.getElementById("textInput").value;
-            fetch(`http://127.0.0.1/emails/nickname`,
-                {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        "text": text
-                    })
-                }
-            )
-                .then(response => response.text())
-                .then(result => {
-                    document.getElementById("output").innerText = result;
-                });
-        }
 
-        function getDomain() {
-            var text = document.getElementById("textInput").value;
-            fetch(`http://127.0.0.1/emails/domain`,
-                {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        "text": text
-                    })
-                }
-            )
-                .then(response => response.text())
-                .then(result => {
-                    document.getElementById("output").innerText = result;
-                });
-        }
 
-        function getHistoryNickname() {
-            fetch(`http://127.0.0.1/emails/nickname`,
-                {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                }
-            )
-                .then(response => response.text())
-                .then(result => {
-                    document.getElementById("output").innerText = result;
-                });
-        }
-
-        function getHistoryDomain() {
-            fetch(`http://127.0.0.1/emails/domain`,
-                {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                }
-            )
-                .then(response => response.text())
-                .then(result => {
-                    document.getElementById("output").innerText = result;
-                });
-        }
-
-    </script>
+    <div id="list-container"></div>
+    <div class="pagination__container" id="pagination-container"></div>
+    <script src="script.js"></script>
 </body>
 </html>
