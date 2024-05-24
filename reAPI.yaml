@@ -159,6 +159,7 @@ components:
       properties:
         text:
           type: string
+          format: email
 
     NicknameResponse:
       type: object
